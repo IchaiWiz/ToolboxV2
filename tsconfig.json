@@ -11,5 +11,5 @@
     "forceConsistentCasingInFileNames": true,
     "types": ["node"]
   },
-  "include": ["packages/**/*", "modules/**/*"]
+  "include": ["packages/**/*", "modules/**/*", "apps/**/*"]
 }

@@ -1,1 +1,6 @@
 node_modules/
+apps/*/node_modules/
+packages/*/node_modules/
+apps/*/package-lock.json
+dist/
+.DS_Store

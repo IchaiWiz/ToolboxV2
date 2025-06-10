@@ -1,10 +1,12 @@
+import uiSchema from './uiSchema.json';
+
 export interface FileSelectorModule {
   id: string;
   version: string;
   name: string;
   description: string;
-  inputs: Record<string, unknown>;
-  outputs: Record<string, unknown>;
+  inputs: string[];
+  outputs: string[];
   uiSchema: Record<string, unknown>;
   run: () => Promise<string[]>;
 }
@@ -14,9 +16,9 @@ const module: FileSelectorModule = {
   version: '1.0.0',
   name: 'File Selector',
   description: 'Prompts the user to select files',
-  inputs: {},
-  outputs: {},
-  uiSchema: {},
+  inputs: [],
+  outputs: ['paths'],
+  uiSchema,
   async run() {
     return new Promise<string[]>((resolve) => {
       const input = document.createElement('input');

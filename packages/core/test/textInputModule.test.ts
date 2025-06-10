@@ -6,6 +6,9 @@ describe('text-input module', () => {
     const modules = await loadModules();
     const mod: any = modules.find(m => m.name === 'text-input');
     expect(mod).toBeDefined();
+    expect(mod.uiSchema).toBeDefined();
+    expect(mod.uiSchema.properties.text.type).toBe('string');
+    expect(mod.uiSchema.required).toContain('text');
     const result = await mod.run({ text: 'hello' });
     expect(result).toBe('hello');
   });

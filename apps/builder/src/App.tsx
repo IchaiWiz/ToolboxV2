@@ -4,16 +4,20 @@ import ReactFlow, {
   Background,
   Controls,
   MiniMap,
-  Connection,
-  Edge,
-  Node,
   ReactFlowProvider,
   useReactFlow,
+  applyNodeChanges,
+  applyEdgeChanges,
+  type Connection,
+  type Edge,
+  type Node,
+  type NodeChange,
+  type EdgeChange,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { DndContext, DragEndEvent, useDraggable, useDroppable } from '@dnd-kit/core';
+import { DndContext, useDraggable, useDroppable, type DragEndEvent } from '@dnd-kit/core';
 import { loadModules } from '@toolbox/core';
-import { createNode, validateConnection, ModuleNodeData } from './flow';
+import { createNode, validateConnection, type ModuleNodeData } from './flow';
 
 const storageKey = 'builder-layout';
 
@@ -36,14 +40,14 @@ function DraggableModule({ module }: { module: any }) {
   );
 }
 
-function Canvas({ modules }: { modules: any[] }) {
+function Canvas() {
   const [nodes, setNodes] = useState<Node<ModuleNodeData>[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
   const rf = useReactFlow();
   const history = useRef<{ nodes: Node<ModuleNodeData>[]; edges: Edge[] }[]>([]);
   const future = useRef<typeof history.current>([]);
   const canvasRef = useRef<HTMLDivElement>(null);
-  useDroppable({ id: 'canvas', data: null, node: canvasRef });
+  const { setNodeRef } = useDroppable({ id: 'canvas', data: null });
 
   // load from storage
   useEffect(() => {
@@ -84,12 +88,31 @@ function Canvas({ modules }: { modules: any[] }) {
     return () => window.removeEventListener('keydown', handler);
   }, [nodes, edges]);
 
-  const onConnect = useCallback((connection: Connection) => {
-    if (validateConnection(nodes, connection)) {
+  const onNodesChange = useCallback(
+    (changes: NodeChange[]) => {
       history.current.push({ nodes, edges });
-      setEdges((eds) => addEdge(connection, eds));
-    }
-  }, [nodes, edges]);
+      setNodes((nds) => applyNodeChanges(changes, nds));
+    },
+    [nodes, edges]
+  );
+
+  const onEdgesChange = useCallback(
+    (changes: EdgeChange[]) => {
+      history.current.push({ nodes, edges });
+      setEdges((eds) => applyEdgeChanges(changes, eds));
+    },
+    [nodes, edges]
+  );
+
+  const onConnect = useCallback(
+    (connection: Connection) => {
+      if (validateConnection(nodes, connection)) {
+        history.current.push({ nodes, edges });
+        setEdges((eds) => addEdge(connection, eds));
+      }
+    },
+    [nodes, edges]
+  );
 
   const handleDragEnd = useCallback((e: DragEndEvent) => {
     if (e.over?.id === 'canvas' && e.active.data.current) {
@@ -107,12 +130,18 @@ function Canvas({ modules }: { modules: any[] }) {
 
   return (
     <DndContext onDragEnd={handleDragEnd}>
-      <div ref={canvasRef} className="flex-1 h-screen">
+      <div
+        ref={(el) => {
+          canvasRef.current = el;
+          setNodeRef(el);
+        }}
+        className="flex-1 h-screen"
+      >
         <ReactFlow
           nodes={nodes}
           edges={edges}
-          onNodesChange={setNodes}
-          onEdgesChange={setEdges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           fitView
         >
@@ -135,7 +164,7 @@ export default function App() {
     <ReactFlowProvider>
       <div className="flex h-screen">
         <Palette modules={modules} />
-        <Canvas modules={modules} />
+        <Canvas />
       </div>
     </ReactFlowProvider>
   );

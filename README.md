@@ -17,9 +17,14 @@ Modules are TypeScript files under `modules/<name>/index.ts` exporting an object
 
 ```ts
 export interface ModuleMetadata {
-  name: string;
+  id: string;
   version: string;
-  description?: string;
+  name: string;
+  description: string;
+  inputs: string[];
+  outputs: string[];
+  uiSchema: Record<string, unknown>;
+  incompatible?: string[];
 }
 ```
 

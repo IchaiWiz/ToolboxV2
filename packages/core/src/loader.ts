@@ -3,7 +3,18 @@ import path from 'path';
 import type { ModuleMetadata } from './types';
 
 function isValidModule(obj: any): obj is ModuleMetadata {
-  return obj && typeof obj.name === 'string' && typeof obj.version === 'string';
+  return (
+    obj != null &&
+    typeof obj.id === 'string' &&
+    typeof obj.version === 'string' &&
+    typeof obj.name === 'string' &&
+    typeof obj.description === 'string' &&
+    Array.isArray(obj.inputs) && obj.inputs.every((i: any) => typeof i === 'string') &&
+    Array.isArray(obj.outputs) && obj.outputs.every((o: any) => typeof o === 'string') &&
+    obj.uiSchema && typeof obj.uiSchema === 'object' &&
+    (obj.incompatible === undefined ||
+      (Array.isArray(obj.incompatible) && obj.incompatible.every((i: any) => typeof i === 'string')))
+  );
 }
 
 export async function loadModules(): Promise<ModuleMetadata[]> {

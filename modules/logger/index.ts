@@ -3,9 +3,12 @@ export interface LoggerOptions {
 }
 
 export default {
+  id: 'logger',
   name: 'logger',
   version: '1.0.0',
   description: 'Logs string input to console',
+  inputs: ['text'],
+  outputs: ['text'],
   uiSchema: {
     type: 'object',
     properties: {

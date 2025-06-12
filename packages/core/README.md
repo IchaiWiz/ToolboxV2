@@ -15,9 +15,14 @@ an object conforming to the `ModuleMetadata` interface:
 
 ```ts
 export interface ModuleMetadata {
-  name: string;
+  id: string;
   version: string;
-  description?: string;
+  name: string;
+  description: string;
+  inputs: string[];
+  outputs: string[];
+  uiSchema: Record<string, unknown>;
+  incompatible?: string[];
 }
 ```
 

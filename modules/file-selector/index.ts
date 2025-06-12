@@ -8,6 +8,7 @@ export interface FileSelectorModule {
   inputs: string[];
   outputs: string[];
   uiSchema: Record<string, unknown>;
+  incompatible?: string[];
   run: () => Promise<string[]>;
 }
 
